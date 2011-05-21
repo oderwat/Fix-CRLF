@@ -1,6 +1,18 @@
 #!/usr/bin/env ruby
 
-#$KCODE = 'UTF-8'
+# chmod +x the script and copy or ln -s to your /usr/local/bin
+#
+# Find all php files which need to be changed
+# find . -type f -name "*.php" -exec fix-crlf {} \;
+#
+# changed them
+# find . -type f -name "*.php" -exec fix-crlf {} ! \;
+#
+# Use other Wildcards for other files... beware noob coding :)
+#
+# Author: Hans Raaf
+#
+
 
 begin
 
