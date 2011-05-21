@@ -1,0 +1,6 @@
+1 Line CRLF
+2 Line CRLF
+3 Line LF
+4 Line CR5 Line CRLF
+6 Line LF
+ 
