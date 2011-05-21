@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+#$KCODE = 'UTF-8'
+
 begin
 
   if ARGV.length == 0
@@ -10,7 +12,7 @@ begin
     infile=ARGV[0]
   end
 
-  file = File.new(ARGV[0], "r")
+  file = File.new(ARGV[0], "rb")
   content = file.read
 
   counts= {
@@ -22,21 +24,40 @@ begin
 
   new=''
 
+  ion=[0x3c,0x3f,0x70,0x68,0x70,0x20].pack('UUUUUU')
+
+  if content[0..5] == ion
+    puts "File: "+infile
+    puts "Ioncube Encoded PHP"
+    puts
+    exit
+  end
+  
+  if content =~ /\\0/
+    puts "File: "+infile
+    puts "Binary File!? (NUL)"
+    puts
+    exit
+  end
+
   while content.length>0
     tmp = content.partition(/(\r\n|\r|\n)/)
     content = tmp[2]
 
+    omitlf = false
+
     if tmp[1] == "\r\n"
-      x ="[CRLF]"
+      #x ="[CRLF]"
       counts[:crlf]=counts[:crlf]+1
     elsif tmp[1] == "\r"
-      x ="[CR]"
+      #x ="[CR]"
       counts[:cr]=counts[:cr]+1
     elsif tmp[1] == "\n"
-      x = "[LF]"
+      #x = "[LF]"
       counts[:lf]=counts[:lf]+1
     elsif tmp[1] == ""
-      x = "[]"
+      #x = "[]"
+      omitlf = true
       counts[:other]=counts[:other]+1
     else
       puts "Damn!"
@@ -44,26 +65,42 @@ begin
       return # make pycharm happy
     end
 
-    new=new+"#{tmp[0]}\n"
+    if not omitlf
+      new="#{new}#{tmp[0]}\n"
+    else
+      new="#{new}#{tmp[0]}"
+    end
 
     #puts "#{tmp[0]}#{x}"
 
   end
   file.close
 
-  puts "Found: "
-  puts " CRLF's: #{counts[:crlf]}"
-  puts " LF's  : #{counts[:lf]}"
-  puts " CR's  : #{counts[:cr]}"
+  if counts[:lf] != 0 and counts[:cr] != 0
+    puts "File: "+infile
+    puts "Binary File!? (MIX)"
+    puts
 
-  if ARGV.length == 2
-    outfile = ARGV[1]
-    if outfile == '!'
-      outfile = infile
+  elsif counts[:crlf] != 0 or counts[:cr] != 0
+    puts "File: "+infile
+    puts " CRLF's: #{counts[:crlf]}"
+    puts " LF's  : #{counts[:lf]}"
+    puts " CR's  : #{counts[:cr]}"
+
+    if ARGV.length == 2
+      outfile = ARGV[1]
+      if outfile == '!'
+        outfile = infile
+      end
+      file = File.new(outfile, "wb")
+      file.write(new)
+      file.close
     end
-    file = File.new(outfile, "wb")
-    file.write(new)
-    file.close
+    puts
+  else
+    #puts "File: "+infile
+    #puts "File is clean LF!"
+    #puts
   end
 
 end
