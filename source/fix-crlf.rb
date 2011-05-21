@@ -51,19 +51,19 @@ begin
   end
   file.close
 
-  puts "Found:"
-  print counts
-
+  puts "Found: "
+  puts " CRLF's: #{counts[:crlf]}"
+  puts " LF's  : #{counts[:lf]}"
+  puts " CR's  : #{counts[:cr]}"
 
   if ARGV.length == 2
     outfile = ARGV[1]
-  else
-    outfile = infile
+    if outfile == '!'
+      outfile = infile
+    end
+    file = File.new(outfile, "wb")
+    file.write(new)
+    file.close
   end
-
-  file = File.new(outfile, "wb")
-
-  file.write(new)
-  file.close
 
 end
