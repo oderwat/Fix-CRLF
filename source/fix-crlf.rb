@@ -36,9 +36,7 @@ begin
 
   new=''
 
-  ion=[0x3c,0x3f,0x70,0x68,0x70,0x20].pack('UUUUUU')
-
-  if content[0..5] == ion
+  if content =~ /!extension_loaded\('ionCube Loader'\)/
     puts "File: "+infile
     puts "Ioncube Encoded PHP"
     puts
