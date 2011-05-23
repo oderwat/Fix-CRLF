@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: UTF-8
 
 # chmod +x the script and copy or ln -s to your /usr/local/bin
 #
@@ -24,8 +25,13 @@ begin
     infile=ARGV[0]
   end
 
+  # need to use "rb" so we can use partition
+  # on every type of file-encoding (not just utf-8)
+  # (notice to myself: "r:ISO-8859-1:UTF-8")
+  
   file = File.new(ARGV[0], "rb")
   content = file.read
+  #puts content.encoding
 
   counts= {
       :cr => 0,
